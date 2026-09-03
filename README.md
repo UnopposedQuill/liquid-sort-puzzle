@@ -59,3 +59,43 @@ pnpm install
 pnpm run build
 pnpm run dev
 ```
+
+This starts the shared package in watch mode alongside the frontend and server:
+
+- Frontend: http://localhost:5173
+- GraphQL server: http://localhost:4000/graphql
+
+### Scripts
+
+| Script | Description |
+| --- | --- |
+| `pnpm dev` | Runs `shared` (watch), `frontend` and `server` together |
+| `pnpm dev:frontend` / `pnpm dev:server` | Run a single app in dev mode |
+| `pnpm build` | Builds `shared`, `frontend` and `server`, in that order |
+| `pnpm build:shared` / `pnpm build:frontend` / `pnpm build:server` | Build a single workspace |
+| `pnpm cap:sync` | Copies the frontend's `dist/` build into the native Capacitor projects |
+| `pnpm cap:run:android` | Builds, syncs, and launches the app on a connected Android device/emulator |
+
+`shared` must be built (or running via `pnpm dev`/`build:shared`) before `frontend` or `server`, since both consume its compiled `dist/` output rather than the TypeScript source directly.
+
+### Environment Variables
+
+The frontend (`apps/frontend`) reads Vite-exposed env vars at build/dev time:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `VITE_GRAPHQL_ENDPOINT` | `http://localhost:4000/graphql` | URL of the Apollo GraphQL server |
+
+Copy `apps/frontend/.env.example` to `apps/frontend/.env.local` and adjust it to point the frontend at a non-default server.
+
+### Mobile (Capacitor)
+
+The frontend is wrapped with Capacitor (`appId: com.liquid.sort`) for Android/iOS packaging. Native platform folders (`apps/frontend/android/`, `apps/frontend/ios/`) are gitignored and regenerated on demand rather than committed:
+
+```
+pnpm build:frontend
+pnpm cap:sync
+pnpm cap:run:android
+```
+
+An Android project is already scaffolded (`apps/frontend/android/`). To target iOS, add the platform first with `npx cap add ios` from `apps/frontend`.

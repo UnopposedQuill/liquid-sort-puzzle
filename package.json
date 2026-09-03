@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "pnpm -r --parallel dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev:server": "pnpm --filter server dev",
+    "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @liquid-sort/shared build",
     "build:frontend": "pnpm --filter frontend build",
+    "build:server": "pnpm --filter server build",
     "cap:sync": "pnpm --filter frontend cap:sync",
-    "cap:run:android": "pnpm --filter frontend cap:run:android"
+    "cap:run:android": "pnpm --filter frontend cap:run:android",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "typescript": "^5.6.0"

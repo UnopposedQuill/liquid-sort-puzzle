@@ -113,6 +113,10 @@ export function pour(state: Bottle[], fromIdx: number, toIdx: number): Bottle[] 
   return newState;
 }
 
+export function replayMoves(initialState: Bottle[], moves: Move[]): Bottle[] {
+  return moves.reduce((state, [fromIdx, toIdx]) => pour(state, fromIdx, toIdx), initialState);
+}
+
 export function checkWin(state: Bottle[]): boolean {
   return state.every(bottle => isBottleEmpty(bottle) || isBottleComplete(bottle));
 }
