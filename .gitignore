@@ -14,11 +14,12 @@ packages/shared/dist/
 apps/frontend/dist/
 apps/frontend/.vite/
 apps/frontend/.capacitor/
-# Capacitor native platform folders (regenerated via `npx cap sync`)
+# Capacitor native platform folders (regenerated via `npx cap add <platform>`)
+# Relocated under mobile/ via android.path / ios.path in capacitor.config.ts,
+# so a single rule covers both platforms.
 # If you later customize native code, you might want to commit these.
 # For this experiment, we ignore them to keep the repo tiny.
-apps/frontend/android/
-apps/frontend/ios/
+apps/frontend/mobile/
 apps/frontend/*.apk
 apps/frontend/*.aab
 

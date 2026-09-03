@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "cap:sync": "pnpm run build && npx cap sync",
+    "cap:check": "node scripts/check-platforms.mjs",
+    "cap:sync": "pnpm run cap:check && pnpm run build && npx cap sync",
     "cap:run:android": "pnpm run cap:sync && npx cap run android"
   },
   "dependencies": {
