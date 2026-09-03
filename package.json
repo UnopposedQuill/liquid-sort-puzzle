@@ -2,6 +2,7 @@
   "name": "liquid-sort-puzzle",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "dev:frontend": "pnpm --filter frontend dev",
