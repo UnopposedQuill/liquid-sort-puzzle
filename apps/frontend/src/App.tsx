@@ -6,7 +6,7 @@ import {
   type Bottle,
   type Move,
 } from '@liquid-sort/shared';
-import { SUBMIT_ATTEMPT } from './graphql/mutations';
+import { SUBMIT_ATTEMPT, type SubmitAttemptData, type SubmitAttemptVars } from './graphql/mutations';
 import './App.css';
 
 const colorMap: Record<string, string> = {
@@ -63,18 +63,24 @@ function App() {
   const [win, setWin] = useState(false);
   const [numBottles, setNumBottles] = useState(6);
   const [numEmpty, setNumEmpty] = useState(2);
+  const [numColors, setNumColors] = useState(4);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'pending' | 'success' | 'failed'>('idle');
+  const [submitResult, setSubmitResult] = useState<{ score?: number | null; message?: string | null } | null>(null);
 
-  const [submitAttempt] = useMutation(SUBMIT_ATTEMPT);
+  const [submitAttempt] = useMutation<SubmitAttemptData, SubmitAttemptVars>(SUBMIT_ATTEMPT);
 
   const initGame = (bottleCount: number, emptyCount: number) => {
-    const numColors = Math.max(1, bottleCount - emptyCount);
+    const colors = Math.max(1, bottleCount - emptyCount);
+    setNumColors(colors);
     const newSeed = Math.floor(Math.random() * 1000000);
     setSeed(newSeed);
-    const newBottles = generatePuzzle(newSeed, bottleCount, numColors);
+    const newBottles = generatePuzzle(newSeed, bottleCount, colors);
     setBottles(newBottles);
     setSelected(null);
     setMoveHistory([]);
     setWin(false);
+    setSubmitStatus('idle');
+    setSubmitResult(null);
   };
 
   useEffect(() => { initGame(numBottles, numEmpty); }, [numBottles, numEmpty]);
@@ -96,12 +102,17 @@ function App() {
 
       if (checkWin(newBottles)) {
         setWin(true);
+        setSubmitStatus('pending');
         const timeMs = Date.now() - startTime;
         submitAttempt({
-          variables: { seed, moves: newHistory, timeMs }
+          variables: { seed, moves: newHistory, timeMs, numBottles, numColors }
         }).then(res => {
-          console.log('Server response:', res.data);
-        }).catch(err => console.error('Server error:', err));
+          setSubmitStatus('success');
+          setSubmitResult(res.data?.submitAttempt ?? null);
+        }).catch(err => {
+          console.error('Server error:', err);
+          setSubmitStatus('failed');
+        });
       }
     } else {
       setSelected(idx);
@@ -112,6 +123,17 @@ function App() {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', height: '100vh', background: '#2c3e50' }}>
       <h1 style={{ color: 'white' }}>Liquid Sort</h1>
       {win && <h2 style={{ color: 'gold' }}>✨ You Win! ✨</h2>}
+      {submitStatus === 'pending' && <div style={{ color: '#aaa', fontSize: '14px' }}>Submitting score...</div>}
+      {submitStatus === 'success' && (
+        <div style={{ color: '#2ecc71', fontSize: '14px' }}>
+          {submitResult?.message ?? `Score: ${submitResult?.score}`}
+        </div>
+      )}
+      {submitStatus === 'failed' && (
+        <div style={{ color: '#e67e22', fontSize: '14px' }}>
+          ⚠️ Offline — score not submitted
+        </div>
+      )}
       <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '30px' }}>
         {bottles.map((bottle, idx) => (
           <BottleComponent

@@ -10,7 +10,7 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    submitAttempt(seed: Int!, moves: [[Int!]!]!, timeMs: Int!): SubmitResponse!
+    submitAttempt(seed: Int!, moves: [[Int!]!]!, timeMs: Int!, numBottles: Int!, numColors: Int!): SubmitResponse!
   }
 
   type Query {
@@ -20,10 +20,10 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Mutation: {
-    submitAttempt: async (_: any, { seed, moves, timeMs }: { seed: number; moves: Move[]; timeMs: number }) => {
+    submitAttempt: async (_: any, { seed, moves, timeMs, numBottles, numColors }: { seed: number; moves: Move[]; timeMs: number; numBottles: number; numColors: number }) => {
       try {
         // 1. Rehydrate the EXACT same puzzle using the seed (deterministic now!)
-        const initialBottles: Bottle[] = generatePuzzle(seed, 6, 3);
+        const initialBottles: Bottle[] = generatePuzzle(seed, numBottles, numColors);
 
         // 2. Replay the exact moves from the client using the shared logic
         const finalState = replayMoves(initialBottles, moves);
