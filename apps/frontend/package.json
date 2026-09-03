@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "pnpm run build && npx cap sync",
+    "cap:run:android": "pnpm run cap:sync && npx cap run android"
   },
   "dependencies": {
     "@apollo/client": "^4.2.12",
