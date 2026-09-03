@@ -48,6 +48,12 @@ function BottleComponent({ liquids, onClick, isSelected }: {
   );
 }
 
+const MIN_BOTTLES = 3;
+const MIN_EMPTY = 1;
+// Colors beyond the 6-entry palette (see colorMap) wrap around and get a
+// bigger quota (e.g. 8 colors on a 6-color palette means two colors each
+// need 2 bottles to fully sort) rather than erroring — harder, not broken.
+
 function App() {
   const [bottles, setBottles] = useState<Bottle[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
@@ -55,20 +61,23 @@ function App() {
   const [moveHistory, setMoveHistory] = useState<Move[]>([]);
   const [seed, setSeed] = useState(0);
   const [win, setWin] = useState(false);
+  const [numBottles, setNumBottles] = useState(6);
+  const [numEmpty, setNumEmpty] = useState(2);
 
   const [submitAttempt] = useMutation(SUBMIT_ATTEMPT);
 
-  const initGame = () => {
+  const initGame = (bottleCount: number, emptyCount: number) => {
+    const numColors = Math.max(1, bottleCount - emptyCount);
     const newSeed = Math.floor(Math.random() * 1000000);
     setSeed(newSeed);
-    const newBottles = generatePuzzle(newSeed, 6, 3);
+    const newBottles = generatePuzzle(newSeed, bottleCount, numColors);
     setBottles(newBottles);
     setSelected(null);
     setMoveHistory([]);
     setWin(false);
   };
 
-  useEffect(() => { initGame(); }, []);
+  useEffect(() => { initGame(numBottles, numEmpty); }, [numBottles, numEmpty]);
 
   const handleBottleClick = (idx: number) => {
     if (win) return;
@@ -113,9 +122,37 @@ function App() {
           />
         ))}
       </div>
-      <button onClick={initGame} style={{ marginTop: '40px', padding: '12px 30px', fontSize: '16px', cursor: 'pointer' }}>
-        New Game
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '40px' }}>
+        <button onClick={() => initGame(numBottles, numEmpty)} style={{ padding: '12px 30px', fontSize: '16px', cursor: 'pointer' }}>
+          New Game
+        </button>
+        <label style={{ color: 'white', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          Bottles:
+          <input
+            type="number"
+            min={MIN_BOTTLES}
+            value={numBottles}
+            onChange={(e) => {
+              const next = Math.max(MIN_BOTTLES, Number(e.target.value) || MIN_BOTTLES);
+              setNumBottles(next);
+            }}
+            style={{ width: '50px', padding: '6px', fontSize: '14px' }}
+          />
+        </label>
+        <label style={{ color: 'white', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          Empty:
+          <input
+            type="number"
+            min={MIN_EMPTY}
+            value={numEmpty}
+            onChange={(e) => {
+              const next = Math.max(MIN_EMPTY, Number(e.target.value) || MIN_EMPTY);
+              setNumEmpty(next);
+            }}
+            style={{ width: '50px', padding: '6px', fontSize: '14px' }}
+          />
+        </label>
+      </div>
       <div style={{ color: '#aaa', marginTop: '10px', fontSize: '14px' }}>Moves: {moveHistory.length}</div>
     </div>
   );
