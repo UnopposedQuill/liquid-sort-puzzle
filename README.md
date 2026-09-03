@@ -15,13 +15,34 @@ Full bottles are ready for sale and thus shouldn't be reopened.
 ## Project Structure
 ```
 liquid-sort-puzzle/
-├── package.json (workspace root)
+├── .gitignore                 (Root)
+├── package.json               (Root workspace)
 ├── pnpm-workspace.yaml
-├── apps/
-│   ├── frontend/          (Vite + React + Capacitor)
-│   └── server/            (Apollo Server + Node)
-└── packages/
-    └── shared/            (Pure TS game logic)
+├── packages/
+│   └── shared/
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── src/
+│           └── index.ts       (Pure logic + seeded PRNG)
+└── apps/
+    ├── frontend/
+    │   ├── package.json
+    │   ├── vite.config.ts
+    │   ├── tsconfig.json
+    │   ├── index.html
+    │   └── src/
+    │       ├── main.tsx
+    │       ├── App.tsx
+    │       ├── App.css
+    │       ├── apollo/
+    │       │   └── client.ts
+    │       └── graphql/
+    │           └── mutations.ts
+    └── server/
+        ├── package.json
+        ├── tsconfig.json
+        └── src/
+            └── index.ts       (Apollo Server with real replay)
 ```
 
 ## Local Development
