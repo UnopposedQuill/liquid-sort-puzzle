@@ -47,4 +47,15 @@ liquid-sort-puzzle/
 
 ## Local Development
 
-<TODO>
+### Requirements
+
+- pnpm
+- node
+
+### Getting started
+
+```
+pnpm install
+pnpm run build
+pnpm run dev
+```

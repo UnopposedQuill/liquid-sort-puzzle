@@ -6,8 +6,20 @@ const BOTTLE_CAPACITY = 4;
 export type Bottle = LiquidColor[];
 export type Move = [fromIndex: number, toIndex: number];
 
+// --- Seeded PRNG (mulberry32) ---
+function mulberry32(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 // --- Generation ---
-export function generatePuzzle(numBottles: number = 6, numColors: number = 3): Bottle[] {
+export function generatePuzzle(seed: number, numBottles: number = 6, numColors: number = 3): Bottle[] {
+  const rand = mulberry32(seed);
   const totalSlots = numBottles * BOTTLE_CAPACITY;
   const usedSlots = numColors * BOTTLE_CAPACITY; // Each color fills exactly one bottle
   const emptySlots = totalSlots - usedSlots;
@@ -22,7 +34,7 @@ export function generatePuzzle(numBottles: number = 6, numColors: number = 3): B
   }
   // Shuffle pool
   for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
 
@@ -68,7 +80,8 @@ export function isValidPour(state: Bottle[], fromIdx: number, toIdx: number): bo
   const from = state[fromIdx];
   const to = state[toIdx];
   if (isBottleEmpty(from)) return false;
-  if (isBottleFull(from) || isBottleFull(to)) return false;
+  if (isBottleComplete(from)) return false;
+  if (isBottleFull(to)) return false;
   if (isBottleEmpty(to)) return true;
   return getTopLiquid(from) === getTopLiquid(to);
 }
