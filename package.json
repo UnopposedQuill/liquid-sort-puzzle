@@ -12,6 +12,7 @@
     "build:frontend": "pnpm --filter frontend build",
     "build:server": "pnpm --filter server build",
     "cap:check": "pnpm --filter frontend cap:check",
+    "cap:assets": "pnpm --filter frontend cap:assets",
     "cap:sync": "pnpm --filter frontend cap:sync",
     "cap:run:android": "pnpm --filter frontend cap:run:android",
     "test": "echo \"Error: no test specified\" && exit 1"

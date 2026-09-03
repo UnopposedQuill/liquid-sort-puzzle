@@ -8,4 +8,8 @@ html, body, #root {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   font-family: system-ui, sans-serif;
+  /* Matches the app container. Opening the keyboard shrinks the visual
+     viewport while the container stays 100vh, exposing the page behind it --
+     without this the white labels sat on a white band and vanished. */
+  background: #2c3e50;
 }

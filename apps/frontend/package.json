@@ -10,6 +10,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "cap:check": "node scripts/check-platforms.mjs",
+    "cap:assets": "capacitor-assets generate --android --androidProject mobile/android",
     "cap:sync": "pnpm run cap:check && pnpm run build && npx cap sync",
     "cap:run:android": "pnpm run cap:sync && npx cap run android"
   },

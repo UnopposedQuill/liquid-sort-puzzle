@@ -80,6 +80,7 @@ This starts the shared package in watch mode alongside the frontend and server:
 | `pnpm build` | Builds `shared`, `frontend` and `server`, in that order |
 | `pnpm build:shared` / `pnpm build:frontend` / `pnpm build:server` | Build a single workspace |
 | `pnpm cap:check` | Verifies at least one native platform is scaffolded under `mobile/` |
+| `pnpm cap:assets` | Regenerates app icons/splash from `apps/frontend/assets/` into the native project |
 | `pnpm cap:sync` | Runs `cap:check`, then copies the frontend's `dist/` build into the native Capacitor projects |
 | `pnpm cap:run:android` | Builds, syncs, and launches the app on a connected Android device/emulator |
 
@@ -146,6 +147,14 @@ fresh clone has none. Scaffold at least one from apps/frontend:
 ```
 
 Run `pnpm cap:check` on its own any time you want to know which platforms are scaffolded — it prints e.g. `Capacitor platforms present: android`. An empty `mobile/` counts as none, so deleting a platform folder by hand still fails the check rather than slipping through.
+
+**Regenerate the app icons after every `npx cap add`.** `cap add` rebuilds the native project from the Capacitor template, which replaces the generated launcher icons with the default ones — the app will appear with Capacitor's icon rather than this project's. The sources live in `apps/frontend/assets/` (`icon.png`, `icon-foreground.png`, `icon-background.png`) and are committed; only the generated output is disposable:
+
+```
+pnpm cap:assets
+```
+
+That wraps `capacitor-assets generate --android --androidProject mobile/android`. The `--androidProject` flag is required: `@capacitor/assets` v3 does **not** read `android.path` from `capacitor.config.ts` and otherwise looks for a top-level `android/`, warning `Android platform not found ... skipping android generation` and exiting successfully — a silent no-op in the same family as the `cap sync` one above.
 
 Re-run `npx cap add` any time you delete the folder; it's safe to regenerate. Anything you hand-edit inside `mobile/android/` or `mobile/ios/` is lost on regeneration — which is why the keystore advice below deliberately keeps changes *outside* those folders.
 
